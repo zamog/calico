@@ -157,7 +157,9 @@ func NewPodController(ctx context.Context, k8sClientset *kubernetes.Clientset, c
 				log.Debugf("Skipping irrelevant pod %s", key)
 				return
 			}
-
+			//lock the cache
+			workloadEndpointCache.Lock()
+			defer workloadEndpointCache.Unlock()
 			wepDataList, err := podConverter.Convert(newObj)
 			if err != nil {
 				log.WithError(err).Errorf("Error while converting %v to wep.", key)
